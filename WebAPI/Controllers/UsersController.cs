@@ -7,17 +7,17 @@ using Tandem_Diabetes_BE_challenge.Validator;
 
 namespace Tandem_Diabetes_BE_challenge.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IValidator<UserDTO> _validator;
+        private readonly IValidator<UserDTO> _userValidator;
 
-        public UsersController(IUserService userService, IValidator<UserDTO> validator)
+        public UsersController(IUserService userService, IValidator<UserDTO> userValidator)
         {
             _userService = userService;
-            _validator = validator;
+            _userValidator = userValidator;
         }
 
 
@@ -37,8 +37,8 @@ namespace Tandem_Diabetes_BE_challenge.Controllers
                 {
                     return BadRequest(result.Errors[0].ErrorMessage);
                 }
-                IEnumerable<UserResponseDTO> users = await _userService.GetUserByEmail(email);
-                if (users.Count() == 0)
+                UserResponseDTO users = await _userService.GetUserByEmail(email);
+                if (users == null)
                 {
                     return NotFound();
                 }
@@ -49,7 +49,7 @@ namespace Tandem_Diabetes_BE_challenge.Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] UserDTO body)
         {
-            ValidationResult result = await _validator.ValidateAsync(body);
+            ValidationResult result = await _userValidator.ValidateAsync(body);
             if (!result.IsValid)
             {
                 var messages = new Dictionary<string, string>();

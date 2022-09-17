@@ -10,7 +10,7 @@ namespace Tandem_Diabetes_BE_challenge.Mapper
         {
             CreateMap<UserDTO, User>();
             CreateMap<User, UserResponseDTO>()
-                .ForMember(userResponseDTO => userResponseDTO.FullName, opt => opt.MapFrom(userEntity => $"{userEntity.FirstName} {userEntity.MiddleName} {userEntity.LastName}") )
+                .ForMember(userResponseDTO => userResponseDTO.FullName, opt => opt.MapFrom(userEntity => $"{userEntity.FirstName} {userEntity.MiddleName} {userEntity.LastName}"))
                 .ForMember(userResponseDTO => userResponseDTO.userId, opt => opt.MapFrom(userEntity => userEntity.Id));
         }
     }

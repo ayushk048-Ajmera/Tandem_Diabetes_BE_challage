@@ -10,19 +10,18 @@ namespace TestProject
     public class APITests
     {
         private HttpClient httpClient;
-        private string randomNum;
 
         public APITests()
         {
             WebApplicationFactory<Program> webApplicationFactory = new WebApplicationFactory<Program>();
             httpClient = webApplicationFactory.CreateDefaultClient();
-            Random random = new Random();
-            randomNum = random.Next(99).ToString();
         }
 
-        [TestMethod]
-        public async Task ShouldCreateUser()
+        private async Task<HttpResponseMessage> CreateUser()
         {
+            Random random = new Random();
+            var randomNum = random.Next(99);
+
             UserDTO userDTO = new UserDTO
             {
                 FirstName = $"first {randomNum}",
@@ -32,55 +31,65 @@ namespace TestProject
                 EmailAddress = $"{randomNum}@xyz.com"
             };
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync<UserDTO>("/api/users", userDTO);
+            return httpResponseMessage;
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateUser()
+        {
+            HttpResponseMessage httpResponseMessage = await CreateUser();
+
             Assert.AreEqual(httpResponseMessage.StatusCode, HttpStatusCode.Created);
         }
 
 
 
         [TestMethod]
-        public async Task ShouldNotCreateUser()
+        public async Task ShouldThrowEmailRequiredException()
         {
             Random random = new Random();
-            var randomNub = random.Next(99);
+            var randomNum = random.Next(99);
             UserDTO userDTO = new UserDTO
             {
-                FirstName = $"Fake first {randomNub}",
-                LastName = $"Fake Last {randomNub}",
-                MiddleName = $"Fake Middle {randomNub}",
+                FirstName = $"Fake first {randomNum}",
+                LastName = $"Fake Last {randomNum}",
+                MiddleName = $"Fake Middle {randomNum}",
                 PhoneNumber = "123456789",
                 EmailAddress = null
             };
-            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync<UserDTO>("/api/users", userDTO);
-
-
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("/api/users", userDTO);
 
             Assert.AreEqual(httpResponseMessage.StatusCode, HttpStatusCode.BadRequest);
         }
 
         [TestMethod]
-        public async Task GetAllUsers()
+        public async Task ShouldGetAllUsers()
         {
+            HttpResponseMessage httpResponseMessage = await CreateUser();
+            UserDTO createdUser = await httpResponseMessage.Content.ReadFromJsonAsync<UserDTO>();
             List<UserResponseDTO> users = await httpClient.GetFromJsonAsync<List<UserResponseDTO>>("/api/users");
-            bool isExist = users.Any(u => u.EmailAddress.Equals("ayush@xtz.com"));
-            Assert.IsTrue(isExist);
+            bool exists = users.Any(u => u.EmailAddress.Equals(createdUser.EmailAddress));
+
+            Assert.IsTrue(exists);
             Assert.IsTrue(users.Count > 0);
         }
 
         [TestMethod]
         public async Task ShouldGetUserByEmail()
         {
-            string email = "ayush@xtz.com";
-            List<UserResponseDTO> users = await httpClient.GetFromJsonAsync<List<UserResponseDTO>>($"/api/users?email={email}");
-            bool isExist = users.Any(u => u.EmailAddress.Equals(email));
-            Assert.IsTrue(isExist);
+            HttpResponseMessage httpResponseMessage = await CreateUser();
+            UserDTO createdUser = await httpResponseMessage.Content.ReadFromJsonAsync<UserDTO>();
+            UserResponseDTO  user = await httpClient.GetFromJsonAsync<UserResponseDTO> ($"/api/users?email={createdUser.EmailAddress}");
+
+            Assert.AreEqual(user.EmailAddress, createdUser.EmailAddress);
         }
 
 
         [TestMethod]
-        public async Task ShouldNotGetUserByEmail()
+        public async Task ShouldGetBadEmailException()
         {
-            string email = $"{randomNum}";
-            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"/api/users?email={email}");
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"/api/users?email=32324535");
+
             Assert.AreEqual(httpResponseMessage.StatusCode, HttpStatusCode.BadRequest);
         }
     }

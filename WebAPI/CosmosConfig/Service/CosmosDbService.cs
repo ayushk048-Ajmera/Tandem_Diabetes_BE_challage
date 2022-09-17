@@ -15,13 +15,13 @@ namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
             _container = dbClient.GetContainer(databaseName, containerName);
         }
 
-        public async Task<User> AddItemAsync(User item)
+        public async Task<User> AddUserAsync(User user)
         {
             try
             {
-                item.Id = Guid.NewGuid();
-                await _container.CreateItemAsync(item, new PartitionKey(item.Id.ToString()));
-                return item;
+                user.Id = Guid.NewGuid();
+                await _container.CreateItemAsync(user, new PartitionKey(user.EmailAddress));
+                return user;
             }
             catch
             {
@@ -40,6 +40,19 @@ namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
             }
 
             return results;
+        }
+
+        public async Task<User> GetUserAsync(string emailAddress)
+        {
+            try
+            {
+                ItemResponse<User> response = await _container.ReadItemAsync<User>(emailAddress, new PartitionKey(emailAddress));
+                return response.Resource;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Tandem_Diabetes_BE_challenge.Services
     {
         public Task<IEnumerable<UserResponseDTO>> GetAllUsers();
 
-        public Task<IEnumerable<UserResponseDTO>> GetUserByEmail(string email);
+        public Task<UserResponseDTO> GetUserByEmail(string email);
 
         public Task<UserResponseDTO> CreateUser(UserDTO user);
     }

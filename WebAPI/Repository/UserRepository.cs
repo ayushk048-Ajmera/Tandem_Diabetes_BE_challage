@@ -1,7 +1,5 @@
-﻿using Microsoft.Azure.Documents.Client;
-using Tandem_Diabetes_BE_challenge.CosmosConfig.Service;
+﻿using Tandem_Diabetes_BE_challenge.CosmosConfig.Service;
 using Tandem_Diabetes_BE_challenge.Entities;
-using Tandem_Diabetes_BE_challenge.Repository;
 
 namespace Tandem_Diabetes_BE_challenge.Repository
 {
@@ -14,23 +12,22 @@ namespace Tandem_Diabetes_BE_challenge.Repository
             _cosmosDbService = cosmosDbService;
         }
 
-        public async Task<User> createUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            User createdUser = await _cosmosDbService.AddItemAsync(user);
+            User createdUser = await _cosmosDbService.AddUserAsync(user);
             return createdUser;
         }
 
-        public async Task<IEnumerable<User>> getAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
             IEnumerable<User> users = await _cosmosDbService.GetUsersAsync("SELECT * FROM c");
             return users;
         }
 
-        public async Task<IEnumerable<User>> getUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
-            IEnumerable<User> users = await _cosmosDbService.GetUsersAsync($"SELECT * FROM c WHERE c.emailAddress = '{email}'");
+            User users = await _cosmosDbService.GetUserAsync(email);
             return users;
         }
-
     }
 }

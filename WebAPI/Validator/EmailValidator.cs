@@ -6,7 +6,7 @@ namespace Tandem_Diabetes_BE_challenge.Validator
     {
         public EmailValidator()
         {
-            RuleFor(x => x).EmailAddress().WithMessage("Email address is not valid!");
+            RuleFor(x => x).EmailAddress();
         }
     }
 }

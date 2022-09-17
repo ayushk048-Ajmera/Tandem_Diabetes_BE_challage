@@ -11,7 +11,7 @@ namespace Tandem_Diabetes_BE_challenge.Validator
             RuleFor(x => x.MiddleName).Length(0, 10);
             RuleFor(x => x.LastName).Length(0, 10);
             RuleFor(x => x.EmailAddress).EmailAddress();
-            RuleFor(x => x.PhoneNumber).Length(9, 11);
+            RuleFor(x => x.PhoneNumber).Length(8, 13);
         }
     }
 }
