@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tandem Diabetes BE challenge.csproj" />
     <ProjectReference Include="..\WebAPI\Tandem Diabetes BE challenge.csproj" />
   </ItemGroup>
 
