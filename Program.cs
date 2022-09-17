@@ -1,6 +1,7 @@
 using Tandem_Diabetes_BE_challenge.Config;
 using Tandem_Diabetes_BE_challenge.CosmosConfig.Service;
 using Tandem_Diabetes_BE_challenge.Repository;
+using Tandem_Diabetes_BE_challenge.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSingleton<ICosmosDbService>(CosmosDBConfig.InitializeCosmosClientInstanceAsync(builder.Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
 builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 var app = builder.Build();
 

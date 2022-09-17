@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tandem_Diabetes_BE_challenge.Entities;
-using Tandem_Diabetes_BE_challenge.Repository;
+using Tandem_Diabetes_BE_challenge.DTOs;
+using Tandem_Diabetes_BE_challenge.Services;
 
 namespace Tandem_Diabetes_BE_challenge.Controllers
 {
@@ -8,33 +9,29 @@ namespace Tandem_Diabetes_BE_challenge.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
-        public UsersController(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
+        public UsersController(IUserService userService) => _userService = userService;
+        
 
         [HttpGet]
-        public async Task<ActionResult> GetAll(string? email)
+        public async Task<ActionResult> GetUser(string? email)
         {
             if(email == null)
             {
-                IEnumerable<User> enumerable = await _userRepository.getAllUsers();
-                return Ok(enumerable);
+                IEnumerable<UserResponseDTO> users = await _userService.getAllUsers();
+                return Ok(users);
             } else
             {
-                IEnumerable<User> enumerable = await _userRepository.getUserByEmail(email);
-                return Ok(enumerable);
+                IEnumerable<UserResponseDTO> users = await _userService.getUserByEmail(email);
+                return Ok(users);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] User body) {
-            await _userRepository.createUser(body);
-            return Ok();
+        public async Task<ActionResult> Create([FromBody] UserDTO body) {
+            await _userService.createUser(body);
+            return Created("user",body);
         }
-
-
     }
 }
