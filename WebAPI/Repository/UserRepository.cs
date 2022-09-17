@@ -26,8 +26,8 @@ namespace Tandem_Diabetes_BE_challenge.Repository
 
         public async Task<User> GetUserByEmail(string email)
         {
-            User users = await _cosmosDbService.GetUserAsync(email);
-            return users;
+            User user = await _cosmosDbService.GetUserAsync(email);
+            return user;
         }
     }
 }

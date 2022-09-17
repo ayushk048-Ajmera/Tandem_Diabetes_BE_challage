@@ -36,9 +36,9 @@ namespace Tandem_Diabetes_BE_challenge.Services
 
         public async Task<UserResponseDTO> GetUserByEmail(string email)
         {
-            User? users = await _userRepository.GetUserByEmail(email);
+            User? user = await _userRepository.GetUserByEmail(email);
             _logger.LogInformation($"User has found with email : {email}");
-            return _mapper.Map<UserResponseDTO>(users);
+            return _mapper.Map<UserResponseDTO>(user);
         }
     }
 }

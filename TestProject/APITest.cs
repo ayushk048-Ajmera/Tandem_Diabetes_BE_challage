@@ -20,7 +20,7 @@ namespace TestProject
         private async Task<HttpResponseMessage> CreateUser()
         {
             Random random = new Random();
-            var randomNum = random.Next(99);
+            int randomNum = random.Next(99);
 
             UserDTO userDTO = new UserDTO
             {
@@ -48,7 +48,7 @@ namespace TestProject
         public async Task ShouldThrowEmailRequiredException()
         {
             Random random = new Random();
-            var randomNum = random.Next(99);
+            int randomNum = random.Next(99);
             UserDTO userDTO = new UserDTO
             {
                 FirstName = $"Fake first {randomNum}",
@@ -79,7 +79,7 @@ namespace TestProject
         {
             HttpResponseMessage httpResponseMessage = await CreateUser();
             UserDTO createdUser = await httpResponseMessage.Content.ReadFromJsonAsync<UserDTO>();
-            UserResponseDTO  user = await httpClient.GetFromJsonAsync<UserResponseDTO> ($"/api/users?email={createdUser.EmailAddress}");
+            UserResponseDTO user = await httpClient.GetFromJsonAsync<UserResponseDTO>($"/api/users?email={createdUser.EmailAddress}");
 
             Assert.AreEqual(user.EmailAddress, createdUser.EmailAddress);
         }

@@ -35,7 +35,7 @@ namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
             List<User> results = new List<User>();
             while (feedIterator.HasMoreResults)
             {
-                var response = await feedIterator.ReadNextAsync();
+                FeedResponse<User> response = await feedIterator.ReadNextAsync();
                 results.AddRange(response.ToList());
             }
 
