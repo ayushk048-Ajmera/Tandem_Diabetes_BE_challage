@@ -46,7 +46,7 @@ namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
         }
 
         public async Task<User> GetUserAsync(string emailAddress)
-        {
+        { 
             try
             {
                 ItemResponse<User> response = await _container.ReadItemAsync<User>(emailAddress, new PartitionKey(emailAddress));
@@ -56,6 +56,11 @@ namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
             {
                 return null;
             }
+        }
+
+        public async Task<ContainerResponse> Health()
+        {
+            return await _container.ReadContainerAsync();
         }
     }
 }

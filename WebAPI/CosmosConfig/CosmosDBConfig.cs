@@ -1,4 +1,5 @@
-﻿using Tandem_Diabetes_BE_challenge.CosmosConfig.Service;
+﻿using Microsoft.Azure.Cosmos;
+using Tandem_Diabetes_BE_challenge.CosmosConfig.Service;
 
 namespace Tandem_Diabetes_BE_challenge.Config
 {
@@ -11,10 +12,10 @@ namespace Tandem_Diabetes_BE_challenge.Config
             string account = configurationSection.GetSection("Account").Value;
             string key = configurationSection.GetSection("Key").Value;
             
-            Microsoft.Azure.Cosmos.CosmosClient client = new Microsoft.Azure.Cosmos.CosmosClient(account, key);
+            CosmosClient client = new CosmosClient(account, key);
             CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
             
-            Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
+            DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
             await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
 
             return cosmosDbService;

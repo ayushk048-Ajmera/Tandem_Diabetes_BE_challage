@@ -1,5 +1,7 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Tandem_Diabetes_BE_challenge.Config;
+using Tandem_Diabetes_BE_challenge.CosmosConfig;
 using Tandem_Diabetes_BE_challenge.CosmosConfig.Service;
 using Tandem_Diabetes_BE_challenge.DTOs;
 using Tandem_Diabetes_BE_challenge.Repository;
@@ -21,6 +23,9 @@ builder.Services.AddSingleton<ICosmosDbService>(CosmosDBConfig.InitializeCosmosC
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IUserService, UserService>();
 
+builder.Services.AddHealthChecks()
+    .AddCheck<CosmosDbHealthCheck>("health");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,5 +36,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = reg => reg.Tags.Contains("custom"),
+});
 
 app.Run();
