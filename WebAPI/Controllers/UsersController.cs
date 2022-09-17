@@ -4,6 +4,7 @@ using Tandem_Diabetes_BE_challenge.Services;
 using FluentValidation;
 using FluentValidation.Results;
 using Tandem_Diabetes_BE_challenge.Validator;
+using Tandem_Diabetes_BE_challenge.CustomException;
 
 namespace Tandem_Diabetes_BE_challenge.Controllers
 {
@@ -33,15 +34,19 @@ namespace Tandem_Diabetes_BE_challenge.Controllers
             {
                 EmailValidator emailValidator = new EmailValidator();
                 ValidationResult result = await emailValidator.ValidateAsync(email);
+
                 if (!result.IsValid)
                 {
                     return BadRequest(result.Errors[0].ErrorMessage);
                 }
+
                 UserResponseDTO users = await _userService.GetUserByEmail(email);
+
                 if (users == null)
                 {
                     return NotFound();
                 }
+
                 return Ok(users);
             }
         }
@@ -53,14 +58,24 @@ namespace Tandem_Diabetes_BE_challenge.Controllers
             if (!result.IsValid)
             {
                 var messages = new Dictionary<string, string>();
+
                 result.Errors.ForEach(s =>
                 {
                     messages.Add(s.PropertyName, s.ErrorMessage);
                 });
+
                 return BadRequest(messages);
             }
-            UserResponseDTO createdUser = await _userService.CreateUser(body);
-            return Created("api/users", createdUser);
+            try
+            {
+                UserResponseDTO createdUser = await _userService.CreateUser(body);
+                return Created("api/users", createdUser);
+            }
+            catch (AlreadyExistsException ex)
+            {
+                return Conflict(ex.Message);
+            }
+
         }
     }
 }

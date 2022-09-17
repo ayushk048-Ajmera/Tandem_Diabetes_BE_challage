@@ -17,10 +17,14 @@ namespace TestProject
             httpClient = webApplicationFactory.CreateDefaultClient();
         }
 
-        private async Task<HttpResponseMessage> CreateUser()
+        private int GetRandomNumber()
         {
             Random random = new Random();
-            int randomNum = random.Next(99);
+            return random.Next(99);
+        }
+
+        private async Task<HttpResponseMessage> CreateUser(int randomNum)
+        {
 
             UserDTO userDTO = new UserDTO
             {
@@ -37,7 +41,8 @@ namespace TestProject
         [TestMethod]
         public async Task ShouldCreateUser()
         {
-            HttpResponseMessage httpResponseMessage = await CreateUser();
+            int randomNumber = GetRandomNumber();
+            HttpResponseMessage httpResponseMessage = await CreateUser(randomNumber);
 
             Assert.AreEqual(httpResponseMessage.StatusCode, HttpStatusCode.Created);
         }
@@ -47,8 +52,7 @@ namespace TestProject
         [TestMethod]
         public async Task ShouldThrowEmailRequiredException()
         {
-            Random random = new Random();
-            int randomNum = random.Next(99);
+            int randomNum = GetRandomNumber();
             UserDTO userDTO = new UserDTO
             {
                 FirstName = $"Fake first {randomNum}",
@@ -65,7 +69,8 @@ namespace TestProject
         [TestMethod]
         public async Task ShouldGetAllUsers()
         {
-            HttpResponseMessage httpResponseMessage = await CreateUser();
+            int randomNumber = GetRandomNumber();
+            HttpResponseMessage httpResponseMessage = await CreateUser(randomNumber);
             UserDTO createdUser = await httpResponseMessage.Content.ReadFromJsonAsync<UserDTO>();
             List<UserResponseDTO> users = await httpClient.GetFromJsonAsync<List<UserResponseDTO>>("/api/users");
             bool exists = users.Any(u => u.EmailAddress.Equals(createdUser.EmailAddress));
@@ -77,7 +82,8 @@ namespace TestProject
         [TestMethod]
         public async Task ShouldGetUserByEmail()
         {
-            HttpResponseMessage httpResponseMessage = await CreateUser();
+            int randomNumber = GetRandomNumber();
+            HttpResponseMessage httpResponseMessage = await CreateUser(randomNumber);
             UserDTO createdUser = await httpResponseMessage.Content.ReadFromJsonAsync<UserDTO>();
             UserResponseDTO user = await httpClient.GetFromJsonAsync<UserResponseDTO>($"/api/users?email={createdUser.EmailAddress}");
 
@@ -91,6 +97,16 @@ namespace TestProject
             HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"/api/users?email=32324535");
 
             Assert.AreEqual(httpResponseMessage.StatusCode, HttpStatusCode.BadRequest);
+        }
+
+        [TestMethod]
+        public async Task ShouldNotCreateUserWithSameEmail()
+        {
+            int randomNumber = GetRandomNumber();
+            await CreateUser(randomNumber);
+            HttpResponseMessage createUserWithSameEmail = await CreateUser(randomNumber);
+
+            Assert.AreEqual(createUserWithSameEmail.StatusCode, HttpStatusCode.Conflict);
         }
     }
 }

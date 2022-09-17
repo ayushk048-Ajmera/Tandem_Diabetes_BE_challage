@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Tandem_Diabetes_BE_challenge.CustomException;
 using User = Tandem_Diabetes_BE_challenge.Entities.User;
 
 namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
@@ -23,16 +24,18 @@ namespace Tandem_Diabetes_BE_challenge.CosmosConfig.Service
                 await _container.CreateItemAsync(user, new PartitionKey(user.EmailAddress));
                 return user;
             }
-            catch
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
-                throw new Exception("Fail to add user");
+                throw new AlreadyExistsException($"User with {user.EmailAddress} already exists!");
             }
         }
 
         public async Task<IEnumerable<User>> GetUsersAsync(string query)
         {
             FeedIterator<User> feedIterator = _container.GetItemQueryIterator<User>(new QueryDefinition(query));
+
             List<User> results = new List<User>();
+
             while (feedIterator.HasMoreResults)
             {
                 FeedResponse<User> response = await feedIterator.ReadNextAsync();
