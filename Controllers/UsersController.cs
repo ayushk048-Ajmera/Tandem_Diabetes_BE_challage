@@ -24,6 +24,10 @@ namespace Tandem_Diabetes_BE_challenge.Controllers
             } else
             {
                 IEnumerable<UserResponseDTO> users = await _userService.getUserByEmail(email);
+                if(users.Count() == 0)
+                {
+                    return NotFound();
+                }
                 return Ok(users);
             }
         }
