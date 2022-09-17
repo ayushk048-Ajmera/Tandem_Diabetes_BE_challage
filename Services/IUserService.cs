@@ -4,10 +4,10 @@ namespace Tandem_Diabetes_BE_challenge.Services
 {
     public interface IUserService
     {
-        public Task<IEnumerable<UserResponseDTO>> getAllUsers();
+        public Task<IEnumerable<UserResponseDTO>> GetAllUsers();
 
-        public Task<IEnumerable<UserResponseDTO>> getUserByEmail(string email);
+        public Task<IEnumerable<UserResponseDTO>> GetUserByEmail(string email);
 
-        public Task<UserResponseDTO> createUser(UserDTO user);
+        public Task<UserResponseDTO> CreateUser(UserDTO user);
     }
 }

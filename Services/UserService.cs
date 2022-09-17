@@ -18,7 +18,7 @@ namespace Tandem_Diabetes_BE_challenge.Services
             _logger = logger;
         }
 
-        public async Task<UserResponseDTO> createUser(UserDTO user)
+        public async Task<UserResponseDTO> CreateUser(UserDTO user)
         {
             User userEntity = _mapper.Map<User>(user);
             User createdUser = await _userRepository.createUser(userEntity);
@@ -27,14 +27,14 @@ namespace Tandem_Diabetes_BE_challenge.Services
             return _mapper.Map<UserResponseDTO>(createdUser);
         }
 
-        public async Task<IEnumerable<UserResponseDTO>> getAllUsers()
+        public async Task<IEnumerable<UserResponseDTO>> GetAllUsers()
         {
             IEnumerable<User> users = await _userRepository.getAllUsers();
             _logger.LogInformation($"{users.Count()} users are found");
             return _mapper.Map<IEnumerable<UserResponseDTO>>(users);
         }
 
-        public async Task<IEnumerable<UserResponseDTO>> getUserByEmail(string email)
+        public async Task<IEnumerable<UserResponseDTO>> GetUserByEmail(string email)
         {
             IEnumerable<User> users = await _userRepository.getUserByEmail(email);
             if(users.Count() > 0)

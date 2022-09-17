@@ -4,7 +4,7 @@ namespace Tandem_Diabetes_BE_challenge.DTOs
 {
     public class UserDTO
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
 
         public string FirstName { get; set; }
 
